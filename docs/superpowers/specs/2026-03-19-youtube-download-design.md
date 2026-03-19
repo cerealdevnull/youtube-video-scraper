@@ -58,8 +58,10 @@ Cereal runtime calls execute()
   │        - Return List<ResolvedStream>
   │
   3. Select stream matching requested quality
-  │   - BEST      → highest-resolution video stream (with audio)
-  │   - 1080P/720P/480P/360P → closest matching video stream; fall back up if unavailable
+  │   - BEST      → highest-resolution video stream regardless of whether it is
+  │                 a combined (muxed) or adaptive (video-only + separate audio) stream
+  │   - 1080P/720P/480P/360P → closest matching video stream; fall back to next-lower
+  │                 quality if the requested resolution is unavailable
   │   - AUDIO_ONLY → best bitrate audio-only stream
   │   - Log chosen quality if it differs from requested
   │
@@ -105,7 +107,7 @@ Add to `gradle/libs.versions.toml` and `build.gradle.kts`:
 
 NewPipeExtractor is available via JitPack. OkHttp is a standard Maven Central library.
 
-**System dependency:** `ffmpeg` must be installed and on `PATH` for any stream that requires muxing (i.e., any quality above 720p and any BEST selection that results in an adaptive stream). For pre-muxed streams (720p and below from YouTube's combined formats), ffmpeg is not needed.
+**System dependency:** `ffmpeg` must be installed and on `PATH` for any stream where `needsMux = true`. The `needsMux` flag is set by `YouTubeExtractor` when the selected stream consists of a separate video track and audio track. This is determined at runtime from the stream metadata — the downloader does not need to reason about quality levels to decide whether to mux.
 
 ---
 
