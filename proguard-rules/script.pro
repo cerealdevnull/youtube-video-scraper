@@ -70,3 +70,14 @@
 
 # Keep the enum class so that annotations are preserved.
 -keep enum * {}
+
+# NewPipeExtractor uses heavy reflection, JSoup, Rhino (JS engine), and Protobuf internally.
+# Without these rules the scriptJar ProGuard step strips needed classes at runtime.
+-keep class org.schabi.newpipe.** { *; }
+-dontwarn org.schabi.newpipe.**
+
+# OkHttp ProGuard rules (from official OkHttp documentation)
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
