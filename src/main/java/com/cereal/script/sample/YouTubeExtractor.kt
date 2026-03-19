@@ -1,14 +1,15 @@
 package com.cereal.script.sample
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.downloader.Downloader
 import org.schabi.newpipe.extractor.downloader.Response
 import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.StreamExtractor
-import org.schabi.newpipe.extractor.stream.VideoStream
 
 class YouTubeExtractor {
 
@@ -35,7 +36,7 @@ class YouTubeExtractor {
             streams += ResolvedStream(
                 videoUrl = audio.content,
                 audioUrl = null,
-                qualityLabel = "audio-${audio.averageBitrate}kbps",
+                qualityLabel = if (audio.averageBitrate > 0) "audio-${audio.averageBitrate}kbps" else "audio-unknown",
                 extension = audio.format?.suffix ?: "m4a",
                 needsMux = false,
                 isAudioOnly = true,
@@ -58,7 +59,9 @@ class YouTubeExtractor {
 
         // --- Adaptive video-only streams (paired with best audio) ---
         val bestAudio: AudioStream? = extractor.audioStreams
+            .filter { it.averageBitrate > 0 }
             .maxByOrNull { it.averageBitrate }
+            ?: extractor.audioStreams.firstOrNull()
 
         for (video in extractor.videoOnlyStreams) {
             val audioContent = bestAudio?.content
@@ -66,7 +69,7 @@ class YouTubeExtractor {
                 videoUrl = video.content,
                 audioUrl = audioContent,
                 qualityLabel = video.resolution,
-                extension = "mp4",    // ffmpeg output will always be mp4
+                extension = if (audioContent != null) "mp4" else video.format?.suffix ?: "webm",
                 needsMux = audioContent != null,
                 isAudioOnly = false,
                 heightPx = video.height,
@@ -93,23 +96,33 @@ class YouTubeExtractor {
 private class NewPipeDownloader(private val client: OkHttpClient) : Downloader() {
 
     override fun execute(request: org.schabi.newpipe.extractor.downloader.Request): Response {
+        val body = request.dataToSend()
+        val mediaType = request.headers()["Content-Type"]?.firstOrNull()
+            ?.toMediaTypeOrNull()
+
         val okRequest = Request.Builder()
             .url(request.url())
             .apply {
                 request.headers().forEach { (key, values) ->
+                    if (key.equals("Content-Type", ignoreCase = true)) return@forEach
                     values.forEach { value -> addHeader(key, value) }
+                }
+                when (request.httpMethod()) {
+                    "POST" -> post((body ?: ByteArray(0)).toRequestBody(mediaType))
+                    "HEAD" -> head()
+                    // GET is OkHttp default
                 }
             }
             .build()
 
-        val okResponse = client.newCall(okRequest).execute()
-
-        return Response(
-            okResponse.code,
-            okResponse.message,
-            okResponse.headers.toMultimap(),
-            okResponse.body?.string(),
-            okResponse.request.url.toString(),
-        )
+        return client.newCall(okRequest).execute().use { okResponse ->
+            Response(
+                okResponse.code,
+                okResponse.message,
+                okResponse.headers.toMultimap(),
+                okResponse.body?.string(),
+                okResponse.request.url.toString(),
+            )
+        }
     }
 }
