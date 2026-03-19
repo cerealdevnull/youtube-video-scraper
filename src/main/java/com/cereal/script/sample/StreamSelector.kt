@@ -32,7 +32,9 @@ object StreamSelector {
                     ?: videoStreams
                         .filter { it.heightPx < targetHeight }
                         .maxByOrNull { it.heightPx }
-                    // Then next-higher (last resort)
+                    // Then next-higher (closest above target)
+                    ?: videoStreams.filter { it.heightPx > targetHeight }.minByOrNull { it.heightPx }
+                    // Then absolute minimum if nothing above target either
                     ?: videoStreams.minByOrNull { it.heightPx }
             }
         }
