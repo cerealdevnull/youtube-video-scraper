@@ -12,6 +12,9 @@ allprojects {
         maven {
             url = uri("https://maven.cereal-automation.com/releases")
         }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 
     // Exclude these dependencies because they are available in cereal script runtime.
@@ -62,6 +65,8 @@ buildscript {
 dependencies {
     implementation(libs.cereal.sdk)
     implementation(libs.cereal.licensing)
+    implementation(libs.newpipe.extractor)
+    implementation(libs.okhttp)
 
     testImplementation(libs.cereal.sdk)
     testImplementation(kotlin("test"))
