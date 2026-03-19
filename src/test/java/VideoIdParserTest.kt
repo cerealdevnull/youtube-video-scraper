@@ -31,6 +31,11 @@ class VideoIdParserTest {
     }
 
     @Test
+    fun `returns null for whitespace-only input`() {
+        assertNull(VideoIdParser.parse("   "))
+    }
+
+    @Test
     fun `returns null for unrecognised URL`() {
         assertNull(VideoIdParser.parse("https://example.com/video/123"))
     }

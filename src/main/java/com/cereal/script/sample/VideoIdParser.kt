@@ -19,8 +19,8 @@ object VideoIdParser {
             val uri = URI(input)
             when {
                 // https://youtu.be/<id>
-                uri.host?.endsWith("youtu.be") == true -> {
-                    uri.path?.removePrefix("/")?.substringBefore("/")?.takeIf { it.isNotBlank() }
+                (uri.host == "youtu.be" || uri.host?.endsWith(".youtu.be") == true) -> {
+                    uri.path?.removePrefix("/")?.substringBefore("/")?.takeIf { RAW_ID_REGEX.matches(it) }
                 }
                 // https://www.youtube.com/watch?v=<id>
                 uri.host?.contains("youtube.com") == true -> {
@@ -28,7 +28,7 @@ object VideoIdParser {
                         ?.split("&")
                         ?.firstOrNull { it.startsWith("v=") }
                         ?.removePrefix("v=")
-                        ?.takeIf { it.isNotBlank() }
+                        ?.takeIf { RAW_ID_REGEX.matches(it) }
                 }
                 else -> null
             }
