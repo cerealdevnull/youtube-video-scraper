@@ -22,11 +22,12 @@ private const val SCRIPT_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" +
         "KmW5+hWaT3sqkxMw1a2JfTUCAwEAAQ==\n" +
         "-----END PUBLIC KEY-----\n"
 
-class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
+class YoutubeVideoDownloaderScript(
+    internal val extractor: YouTubeExtractor = YouTubeExtractor(),
+    internal val downloader: VideoDownloader = VideoDownloader(),
+) : Script<YoutubeDownloaderConfiguration> {
 
     private var isLicensed = false
-    private val extractor = YouTubeExtractor()
-    private val downloader = VideoDownloader()
 
     override suspend fun onStart(
         configuration: YoutubeDownloaderConfiguration,
