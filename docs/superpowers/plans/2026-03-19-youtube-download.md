@@ -497,9 +497,6 @@ object StreamSelector {
         else -> 0
     }
 
-    private fun parseHeight(label: String): Int =
-        Regex("(\\d+)p").find(label)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-
     // Audio stream labels are "audio-<bitrate>kbps"; extract the numeric bitrate for ranking.
     private fun parseBitrateKbps(label: String): Int =
         Regex("(\\d+)kbps").find(label)?.groupValues?.get(1)?.toIntOrNull() ?: 0
@@ -707,13 +704,14 @@ rm src/main/java/com/cereal/script/sample/SampleConfiguration.kt
 
 Expected: **BUILD FAILS** — `SampleScript.kt` still references `SampleConfiguration` which has been deleted. This is expected and will be fixed in Task 9 when `SampleScript.kt` is replaced.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: Stage changes (do NOT commit yet — commit together with Task 9)**
 
 ```bash
 git add src/main/java/com/cereal/script/sample/YoutubeDownloaderConfiguration.kt
 git rm src/main/java/com/cereal/script/sample/SampleConfiguration.kt
-git commit -m "feat: add YoutubeDownloaderConfiguration, remove SampleConfiguration"
 ```
+
+> **Note:** Do not commit here. The build is broken at this point (SampleScript still references the deleted SampleConfiguration). Stage the files and proceed directly to Task 9. Both tasks are committed together at the end of Task 9 to avoid landing a broken build.
 
 ---
 
@@ -834,18 +832,7 @@ class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
 }
 ```
 
-Note: the script calls `extractor.getTitle(videoId)` — add a `getTitle` method to `YouTubeExtractor` in the same step:
-
-```kotlin
-// Add to YouTubeExtractor class:
-fun getTitle(videoId: String): String {
-    val url = "https://www.youtube.com/watch?v=$videoId"
-    return ServiceList.YouTube
-        .getStreamExtractor(url)
-        .also { it.fetchPage() }
-        .name
-}
-```
+Note: `getTitle` is already implemented in `YouTubeExtractor` as part of Task 5. No additional changes to `YouTubeExtractor.kt` are needed here.
 
 - [ ] **Step 2: Delete old `SampleScript.kt`**
 
@@ -861,13 +848,13 @@ rm src/main/java/com/cereal/script/sample/SampleScript.kt
 
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: Commit Tasks 8 and 9 together**
 
 ```bash
 git add src/main/java/com/cereal/script/sample/YoutubeVideoDownloaderScript.kt \
         src/main/java/com/cereal/script/sample/YouTubeExtractor.kt
 git rm src/main/java/com/cereal/script/sample/SampleScript.kt
-git commit -m "feat: implement YoutubeVideoDownloaderScript entry point"
+git commit -m "feat: add configuration + script entry point, remove sample files"
 ```
 
 ---
