@@ -7,13 +7,11 @@ import com.cereal.script.sample.YouTubeExtractor
 import com.cereal.script.sample.YoutubeDownloaderConfiguration
 import com.cereal.script.sample.YoutubeVideoDownloaderScript
 import com.cereal.sdk.ExecutionResult
-import com.cereal.test.TestScriptRunner
 import com.cereal.test.components.TestComponentProviderFactory
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
-import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.io.File
@@ -26,7 +24,7 @@ class TestYoutubeVideoDownloaderScript {
         val fakeStream = ResolvedStream(
             videoUrl = "https://example.com/video.mp4",
             audioUrl = null,
-            qualityLabel = "720p",
+            qualityLabel = "720P",
             extension = "mp4",
             needsMux = false,
             isAudioOnly = false,
@@ -56,11 +54,13 @@ class TestYoutubeVideoDownloaderScript {
         }
 
         val componentProviderFactory = TestComponentProviderFactory()
-        val scriptRunner = TestScriptRunner(script)
+        val provider = componentProviderFactory.create()
 
-        script.onStart(configuration, componentProviderFactory.create())
-        scriptRunner.run(configuration, componentProviderFactory)
-        // If no exception is thrown, the test passes.
+        script.onStart(configuration, provider)
+        val result = script.execute(configuration, provider) { }
+
+        assertIs<ExecutionResult.Success>(result)
+        Unit
     }
 
     @Test
@@ -76,7 +76,6 @@ class TestYoutubeVideoDownloaderScript {
         }
 
         val componentProviderFactory = TestComponentProviderFactory()
-        val scriptRunner = TestScriptRunner(script)
 
         // Force onStart to set isLicensed = true
         script.onStart(configuration, componentProviderFactory.create())

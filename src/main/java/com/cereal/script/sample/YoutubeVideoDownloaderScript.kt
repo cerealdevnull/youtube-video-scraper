@@ -23,8 +23,8 @@ private const val SCRIPT_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" +
         "-----END PUBLIC KEY-----\n"
 
 class YoutubeVideoDownloaderScript(
-    internal val extractor: YouTubeExtractor = YouTubeExtractor(),
-    internal val downloader: VideoDownloader = VideoDownloader(),
+    private val extractor: YouTubeExtractor = YouTubeExtractor(),
+    private val downloader: VideoDownloader = VideoDownloader(),
 ) : Script<YoutubeDownloaderConfiguration> {
 
     private var isLicensed = false
