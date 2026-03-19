@@ -14,12 +14,16 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
      * Throws on network error or ffmpeg failure.
      */
     fun download(stream: ResolvedStream, rawTitle: String): File {
+        require(downloadsDir.exists() && downloadsDir.isDirectory) {
+            "Downloads directory does not exist: ${downloadsDir.absolutePath}"
+        }
+
         val title = sanitizeTitle(rawTitle)
         val outputFile = uniqueFile(downloadsDir, title, stream.extension)
 
         if (stream.needsMux && stream.audioUrl != null) {
-            val videoTmp = File(downloadsDir, "$title.video.tmp")
-            val audioTmp = File(downloadsDir, "$title.audio.tmp")
+            val videoTmp = File.createTempFile("yt_video_", ".tmp", downloadsDir)
+            val audioTmp = File.createTempFile("yt_audio_", ".tmp", downloadsDir)
             try {
                 downloadToFile(stream.videoUrl, videoTmp)
                 downloadToFile(stream.audioUrl, audioTmp)
@@ -63,10 +67,21 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
             .redirectErrorStream(true)
             .start()
 
+        // Drain ffmpeg's output on a background thread to prevent pipe buffer deadlock.
+        // ffmpeg is chatty (progress per frame); without draining, it fills the OS pipe
+        // buffer and blocks before the process can exit.
+        val outputCapture = StringBuilder()
+        val drainer = Thread {
+            process.inputStream.bufferedReader().forEachLine { outputCapture.appendLine(it) }
+        }
+        drainer.start()
+
         val exitCode = process.waitFor()
+        drainer.join()
+
         if (exitCode != 0) {
-            val stderr = process.inputStream.bufferedReader().readText()
-            throw RuntimeException("ffmpeg failed (exit $exitCode):\n$stderr")
+            output.delete()  // clean up partial output file on failure
+            throw RuntimeException("ffmpeg failed (exit $exitCode):\n$outputCapture")
         }
     }
 
@@ -81,6 +96,16 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
                 val f = File(dir, name)
                 if (f.canExecute()) return f.absolutePath
             }
+        }
+        // Fallback: well-known locations that may not be on PATH when launched as non-login process
+        val fallbacks = listOf(
+            "/opt/homebrew/bin/ffmpeg",  // Apple Silicon Homebrew
+            "/usr/local/bin/ffmpeg",      // Intel Homebrew / standard Unix
+            "/usr/bin/ffmpeg",
+        )
+        for (path in fallbacks) {
+            val f = File(path)
+            if (f.canExecute()) return f.absolutePath
         }
         return null
     }
