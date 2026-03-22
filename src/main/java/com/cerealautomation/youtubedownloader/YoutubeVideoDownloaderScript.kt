@@ -44,8 +44,8 @@ class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
         val stream = StreamSelector.select(streams, quality)
             ?: return ExecutionResult.Error("No streams available")
 
-        if (stream.qualityLabel != quality.label) {
-            provider.logger().info("Requested quality ${quality.label} unavailable; using ${stream.qualityLabel}")
+        if (stream.qualityLabel != quality.displayName) {
+            provider.logger().info("Requested quality ${quality.displayName} unavailable; using ${stream.qualityLabel}")
         }
 
         provider.logger().info("Downloading stream: ${stream.qualityLabel} (${stream.extension}), needsMux=${stream.needsMux}")
