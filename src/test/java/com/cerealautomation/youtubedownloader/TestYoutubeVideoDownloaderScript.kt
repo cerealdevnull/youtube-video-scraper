@@ -1,11 +1,7 @@
+package com.cerealautomation.youtubedownloader
+
 import com.cereal.licensechecker.LicenseChecker
 import com.cereal.licensechecker.LicenseState
-import com.cereal.script.sample.DownloadQuality
-import com.cereal.script.sample.ResolvedStream
-import com.cereal.script.sample.VideoDownloader
-import com.cereal.script.sample.YouTubeExtractor
-import com.cereal.script.sample.YoutubeDownloaderConfiguration
-import com.cereal.script.sample.YoutubeVideoDownloaderScript
 import com.cereal.sdk.ExecutionResult
 import com.cereal.test.components.TestComponentProviderFactory
 import io.mockk.coEvery

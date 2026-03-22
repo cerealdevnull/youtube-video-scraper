@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient

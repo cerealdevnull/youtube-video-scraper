@@ -16,13 +16,13 @@
 |--------|------|----------------|
 | Modify | `gradle/libs.versions.toml` | Add NewPipeExtractor and OkHttp version entries |
 | Modify | `build.gradle.kts` | Add JitPack repo, NewPipeExtractor and OkHttp dependencies |
-| Rename/replace | `src/main/java/com/cereal/script/sample/SampleConfiguration.kt` → `YoutubeDownloaderConfiguration.kt` | Configuration interface: `videoUrl()`, `quality()` |
-| Create | `src/main/java/com/cereal/script/sample/DownloadQuality.kt` | Enum: `BEST`, `Q1080P`, `Q720P`, `Q480P`, `Q360P`, `AUDIO_ONLY` + `fromString()` |
-| Create | `src/main/java/com/cereal/script/sample/ResolvedStream.kt` | Data class: `videoUrl`, `audioUrl?`, `qualityLabel`, `extension`, `needsMux` |
-| Create | `src/main/java/com/cereal/script/sample/VideoIdParser.kt` | Parses full YouTube URLs and raw IDs → video ID string |
-| Create | `src/main/java/com/cereal/script/sample/YouTubeExtractor.kt` | Wraps NewPipeExtractor; returns `List<ResolvedStream>` for a video ID |
-| Create | `src/main/java/com/cereal/script/sample/VideoDownloader.kt` | OkHttp download + ffmpeg mux; writes to `~/Downloads` |
-| Rename/replace | `src/main/java/com/cereal/script/sample/SampleScript.kt` → `YoutubeVideoDownloaderScript.kt` | Script entry point: orchestrates the flow |
+| Rename/replace | `src/main/java/com/cerealautomation/youtubedownloader/SampleConfiguration.kt` → `YoutubeDownloaderConfiguration.kt` | Configuration interface: `videoUrl()`, `quality()` |
+| Create | `src/main/java/com/cerealautomation/youtubedownloader/DownloadQuality.kt` | Enum: `BEST`, `Q1080P`, `Q720P`, `Q480P`, `Q360P`, `AUDIO_ONLY` + `fromString()` |
+| Create | `src/main/java/com/cerealautomation/youtubedownloader/ResolvedStream.kt` | Data class: `videoUrl`, `audioUrl?`, `qualityLabel`, `extension`, `needsMux` |
+| Create | `src/main/java/com/cerealautomation/youtubedownloader/VideoIdParser.kt` | Parses full YouTube URLs and raw IDs → video ID string |
+| Create | `src/main/java/com/cerealautomation/youtubedownloader/YouTubeExtractor.kt` | Wraps NewPipeExtractor; returns `List<ResolvedStream>` for a video ID |
+| Create | `src/main/java/com/cerealautomation/youtubedownloader/VideoDownloader.kt` | OkHttp download + ffmpeg mux; writes to `~/Downloads` |
+| Rename/replace | `src/main/java/com/cerealautomation/youtubedownloader/SampleScript.kt` → `YoutubeVideoDownloaderScript.kt` | Script entry point: orchestrates the flow |
 | Modify | `src/main/resources/manifest.json` | Update `name`, `package_name`, `script` class reference |
 | Replace | `src/test/java/TestSampleScript.kt` → `TestYoutubeVideoDownloaderScript.kt` | Integration-style test using Cereal test harness |
 | Create | `src/test/java/VideoIdParserTest.kt` | Unit tests for URL/ID parsing |
@@ -84,12 +84,12 @@ git commit -m "build: add NewPipeExtractor and OkHttp dependencies"
 ## Task 2: `DownloadQuality` Enum
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/DownloadQuality.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/DownloadQuality.kt`
 
 - [ ] **Step 1: Create the enum**
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 enum class DownloadQuality(val label: String) {
     BEST("BEST"),
@@ -118,7 +118,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/DownloadQuality.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/DownloadQuality.kt
 git commit -m "feat: add DownloadQuality enum"
 ```
 
@@ -127,12 +127,12 @@ git commit -m "feat: add DownloadQuality enum"
 ## Task 3: `ResolvedStream` Data Class
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/ResolvedStream.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/ResolvedStream.kt`
 
 - [ ] **Step 1: Create the data class**
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 data class ResolvedStream(
     val videoUrl: String,
@@ -156,7 +156,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/ResolvedStream.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/ResolvedStream.kt
 git commit -m "feat: add ResolvedStream data class"
 ```
 
@@ -165,7 +165,7 @@ git commit -m "feat: add ResolvedStream data class"
 ## Task 4: `VideoIdParser`
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/VideoIdParser.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/VideoIdParser.kt`
 - Test: `src/test/java/VideoIdParserTest.kt`
 
 - [ ] **Step 1: Write the failing tests first**
@@ -173,7 +173,7 @@ git commit -m "feat: add ResolvedStream data class"
 Create `src/test/java/VideoIdParserTest.kt`:
 
 ```kotlin
-import com.cereal.script.sample.VideoIdParser
+import com.cerealautomation.youtubedownloader.VideoIdParser
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -227,10 +227,10 @@ Expected: FAIL — `VideoIdParser` does not exist yet
 
 - [ ] **Step 3: Implement `VideoIdParser`**
 
-Create `src/main/java/com/cereal/script/sample/VideoIdParser.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/VideoIdParser.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import java.net.URI
 
@@ -285,7 +285,7 @@ Expected: all 7 tests PASS
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/VideoIdParser.kt src/test/java/VideoIdParserTest.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/VideoIdParser.kt src/test/java/VideoIdParserTest.kt
 git commit -m "feat: add VideoIdParser with full test coverage"
 ```
 
@@ -294,16 +294,16 @@ git commit -m "feat: add VideoIdParser with full test coverage"
 ## Task 5: `YouTubeExtractor`
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/YouTubeExtractor.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/YouTubeExtractor.kt`
 
 Note: NewPipeExtractor requires a `Downloader` implementation to make HTTP requests. The library ships a no-op `RecordingDownloader` for testing; for production use we provide a thin OkHttp-backed implementation inline.
 
 - [ ] **Step 1: Create `YouTubeExtractor`**
 
-Create `src/main/java/com/cereal/script/sample/YouTubeExtractor.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/YouTubeExtractor.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -431,7 +431,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/YouTubeExtractor.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/YouTubeExtractor.kt
 git commit -m "feat: add YouTubeExtractor wrapping NewPipeExtractor"
 ```
 
@@ -442,14 +442,14 @@ git commit -m "feat: add YouTubeExtractor wrapping NewPipeExtractor"
 This logic lives inside `YoutubeVideoDownloaderScript` but is extracted here as a testable pure function to keep the script entry point thin.
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/StreamSelector.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/StreamSelector.kt`
 
 - [ ] **Step 1: Create `StreamSelector`**
 
-Create `src/main/java/com/cereal/script/sample/StreamSelector.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/StreamSelector.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 object StreamSelector {
 
@@ -514,7 +514,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/StreamSelector.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/StreamSelector.kt
 git commit -m "feat: add StreamSelector for quality-based stream picking"
 ```
 
@@ -523,14 +523,14 @@ git commit -m "feat: add StreamSelector for quality-based stream picking"
 ## Task 7: `VideoDownloader`
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/VideoDownloader.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/VideoDownloader.kt`
 
 - [ ] **Step 1: Create `VideoDownloader`**
 
-Create `src/main/java/com/cereal/script/sample/VideoDownloader.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/VideoDownloader.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -650,7 +650,7 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/VideoDownloader.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/VideoDownloader.kt
 git commit -m "feat: add VideoDownloader with OkHttp download and ffmpeg mux"
 ```
 
@@ -659,15 +659,15 @@ git commit -m "feat: add VideoDownloader with OkHttp download and ffmpeg mux"
 ## Task 8: `YoutubeDownloaderConfiguration`
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/YoutubeDownloaderConfiguration.kt`
-- Delete: `src/main/java/com/cereal/script/sample/SampleConfiguration.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/YoutubeDownloaderConfiguration.kt`
+- Delete: `src/main/java/com/cerealautomation/youtubedownloader/SampleConfiguration.kt`
 
 - [ ] **Step 1: Create the configuration interface**
 
-Create `src/main/java/com/cereal/script/sample/YoutubeDownloaderConfiguration.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/YoutubeDownloaderConfiguration.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import com.cereal.sdk.ScriptConfiguration
 import com.cereal.sdk.ScriptConfigurationItem
@@ -693,7 +693,7 @@ interface YoutubeDownloaderConfiguration : ScriptConfiguration {
 - [ ] **Step 2: Delete the old sample configuration**
 
 ```bash
-rm src/main/java/com/cereal/script/sample/SampleConfiguration.kt
+rm src/main/java/com/cerealautomation/youtubedownloader/SampleConfiguration.kt
 ```
 
 - [ ] **Step 3: Compile check**
@@ -707,8 +707,8 @@ Expected: **BUILD FAILS** — `SampleScript.kt` still references `SampleConfigur
 - [ ] **Step 4: Stage changes (do NOT commit yet — commit together with Task 9)**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/YoutubeDownloaderConfiguration.kt
-git rm src/main/java/com/cereal/script/sample/SampleConfiguration.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/YoutubeDownloaderConfiguration.kt
+git rm src/main/java/com/cerealautomation/youtubedownloader/SampleConfiguration.kt
 ```
 
 > **Note:** Do not commit here. The build is broken at this point (SampleScript still references the deleted SampleConfiguration). Stage the files and proceed directly to Task 9. Both tasks are committed together at the end of Task 9 to avoid landing a broken build.
@@ -718,15 +718,15 @@ git rm src/main/java/com/cereal/script/sample/SampleConfiguration.kt
 ## Task 9: `YoutubeVideoDownloaderScript` (entry point)
 
 **Files:**
-- Create: `src/main/java/com/cereal/script/sample/YoutubeVideoDownloaderScript.kt`
-- Delete: `src/main/java/com/cereal/script/sample/SampleScript.kt`
+- Create: `src/main/java/com/cerealautomation/youtubedownloader/YoutubeVideoDownloaderScript.kt`
+- Delete: `src/main/java/com/cerealautomation/youtubedownloader/SampleScript.kt`
 
 - [ ] **Step 1: Create the script entry point**
 
-Create `src/main/java/com/cereal/script/sample/YoutubeVideoDownloaderScript.kt`:
+Create `src/main/java/com/cerealautomation/youtubedownloader/YoutubeVideoDownloaderScript.kt`:
 
 ```kotlin
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import com.cereal.licensechecker.LicenseChecker
 import com.cereal.licensechecker.LicenseState
@@ -837,7 +837,7 @@ Note: `getTitle` is already implemented in `YouTubeExtractor` as part of Task 5.
 - [ ] **Step 2: Delete old `SampleScript.kt`**
 
 ```bash
-rm src/main/java/com/cereal/script/sample/SampleScript.kt
+rm src/main/java/com/cerealautomation/youtubedownloader/SampleScript.kt
 ```
 
 - [ ] **Step 3: Compile check**
@@ -851,9 +851,9 @@ Expected: BUILD SUCCESSFUL
 - [ ] **Step 4: Commit Tasks 8 and 9 together**
 
 ```bash
-git add src/main/java/com/cereal/script/sample/YoutubeVideoDownloaderScript.kt \
-        src/main/java/com/cereal/script/sample/YouTubeExtractor.kt
-git rm src/main/java/com/cereal/script/sample/SampleScript.kt
+git add src/main/java/com/cerealautomation/youtubedownloader/YoutubeVideoDownloaderScript.kt \
+        src/main/java/com/cerealautomation/youtubedownloader/YouTubeExtractor.kt
+git rm src/main/java/com/cerealautomation/youtubedownloader/SampleScript.kt
 git commit -m "feat: add configuration + script entry point, remove sample files"
 ```
 
@@ -873,7 +873,7 @@ Replace the contents of `src/main/resources/manifest.json`:
   "package_name": "com.cereal-automation.youtubedownloader",
   "name": "YouTube Video Downloader",
   "version_code": 1,
-  "script": "com.cereal.script.sample.YoutubeVideoDownloaderScript",
+  "script": "com.cerealautomation.youtubedownloader.YoutubeVideoDownloaderScript",
   "instructions": "Paste a YouTube URL or video ID, select quality, and press Start. Files are saved to your Downloads folder. HD quality (1080P and BEST) requires ffmpeg to be installed."
 }
 ```
@@ -913,12 +913,12 @@ Create `src/test/java/TestYoutubeVideoDownloaderScript.kt`:
 ```kotlin
 import com.cereal.licensechecker.LicenseChecker
 import com.cereal.licensechecker.LicenseState
-import com.cereal.script.sample.DownloadQuality
-import com.cereal.script.sample.ResolvedStream
-import com.cereal.script.sample.VideoDownloader
-import com.cereal.script.sample.YouTubeExtractor
-import com.cereal.script.sample.YoutubeDownloaderConfiguration
-import com.cereal.script.sample.YoutubeVideoDownloaderScript
+import com.cerealautomation.youtubedownloader.DownloadQuality
+import com.cerealautomation.youtubedownloader.ResolvedStream
+import com.cerealautomation.youtubedownloader.VideoDownloader
+import com.cerealautomation.youtubedownloader.YouTubeExtractor
+import com.cerealautomation.youtubedownloader.YoutubeDownloaderConfiguration
+import com.cerealautomation.youtubedownloader.YoutubeVideoDownloaderScript
 import com.cereal.sdk.ExecutionResult
 import com.cereal.test.TestScriptRunner
 import com.cereal.test.components.TestComponentProviderFactory

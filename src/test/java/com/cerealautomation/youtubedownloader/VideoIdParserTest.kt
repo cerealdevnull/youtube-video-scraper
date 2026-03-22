@@ -1,4 +1,5 @@
-import com.cereal.script.sample.VideoIdParser
+package com.cerealautomation.youtubedownloader
+
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

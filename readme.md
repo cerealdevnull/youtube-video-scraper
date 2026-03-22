@@ -17,7 +17,7 @@ git clone https://github.com/Your-Org/Script-Repo-Name.git
 * You'll need to update the script name in several files:
   * `settings.gradle.kts` update rootProject.name.
   * `.idea/.name` update the file content.
-* Rename the package `com.cereal.script.sample` to something you like.
+* Rename the package `com.cerealautomation.youtubedownloader` to something you like.
 * Update package_name, name and script in `src/main/resources/manifest.json`.
 
 ## Usage

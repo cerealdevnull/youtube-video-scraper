@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import com.cereal.sdk.ScriptConfiguration
 import com.cereal.sdk.ScriptConfigurationItem

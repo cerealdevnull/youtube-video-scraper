@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import com.cereal.licensechecker.LicenseChecker
 import com.cereal.licensechecker.LicenseState

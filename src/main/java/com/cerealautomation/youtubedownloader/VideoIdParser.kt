@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 import java.net.URI
 

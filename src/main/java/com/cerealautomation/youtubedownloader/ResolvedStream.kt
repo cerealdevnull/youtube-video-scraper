@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 data class ResolvedStream(
     val videoUrl: String,

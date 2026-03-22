@@ -1,4 +1,4 @@
-package com.cereal.script.sample
+package com.cerealautomation.youtubedownloader
 
 enum class DownloadQuality(val label: String) {
     BEST("BEST"),
