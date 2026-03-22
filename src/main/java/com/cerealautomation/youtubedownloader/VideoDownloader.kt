@@ -14,8 +14,11 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
      * Throws on network error or ffmpeg failure.
      */
     fun download(stream: ResolvedStream, rawTitle: String): File {
+        if (!downloadsDir.exists()) {
+            downloadsDir.mkdirs()
+        }
         require(downloadsDir.exists() && downloadsDir.isDirectory) {
-            "Downloads directory does not exist: ${downloadsDir.absolutePath}"
+            "Downloads directory does not exist and could not be created: ${downloadsDir.absolutePath}"
         }
 
         val title = sanitizeTitle(rawTitle)
@@ -86,8 +89,8 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
     }
 
     private fun findFfmpeg(): String? {
-        val candidates = if (System.getProperty("os.name").lowercase().contains("win"))
-            listOf("ffmpeg.exe") else listOf("ffmpeg")
+        val isWin = System.getProperty("os.name").lowercase().contains("win")
+        val candidates = if (isWin) listOf("ffmpeg.exe") else listOf("ffmpeg")
 
         // Check PATH entries
         val pathDirs = System.getenv("PATH")?.split(File.pathSeparator) ?: emptyList()
@@ -97,12 +100,23 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
                 if (f.canExecute()) return f.absolutePath
             }
         }
+        
         // Fallback: well-known locations that may not be on PATH when launched as non-login process
-        val fallbacks = listOf(
-            "/opt/homebrew/bin/ffmpeg",  // Apple Silicon Homebrew
-            "/usr/local/bin/ffmpeg",      // Intel Homebrew / standard Unix
-            "/usr/bin/ffmpeg",
-        )
+        val fallbacks = if (isWin) {
+            listOf(
+                "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+                "C:\\ffmpeg\\bin\\ffmpeg.exe",
+                "C:\\ffmpeg\\ffmpeg.exe"
+            )
+        } else {
+            listOf(
+                "/opt/homebrew/bin/ffmpeg",  // Apple Silicon Homebrew
+                "/usr/local/bin/ffmpeg",      // Intel Homebrew / standard Unix
+                "/usr/bin/ffmpeg",            // Standard Linux
+                "/snap/bin/ffmpeg"            // Ubuntu Snap
+            )
+        }
+        
         for (path in fallbacks) {
             val f = File(path)
             if (f.canExecute()) return f.absolutePath
