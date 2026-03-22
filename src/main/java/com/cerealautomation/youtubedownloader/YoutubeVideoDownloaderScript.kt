@@ -58,7 +58,7 @@ class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
         }
 
         val outputFile = try {
-            downloader.download(stream, videoTitle)
+            downloader.download(stream, videoTitle, statusUpdate)
         } catch (e: Exception) {
             return ExecutionResult.Error("Download failed: ${e.message}")
         }

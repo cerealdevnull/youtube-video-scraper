@@ -13,7 +13,11 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
      * Returns the path of the output file.
      * Throws on network error or ffmpeg failure.
      */
-    fun download(stream: ResolvedStream, rawTitle: String): File {
+    suspend fun download(
+        stream: ResolvedStream,
+        rawTitle: String,
+        onProgress: suspend (String) -> Unit = {}
+    ): File {
         if (!downloadsDir.exists()) {
             downloadsDir.mkdirs()
         }
@@ -28,32 +32,72 @@ class VideoDownloader(private val httpClient: OkHttpClient = OkHttpClient()) {
             val videoTmp = File.createTempFile("yt_video_", ".tmp", downloadsDir)
             val audioTmp = File.createTempFile("yt_audio_", ".tmp", downloadsDir)
             try {
-                downloadToFile(stream.videoUrl, videoTmp)
-                downloadToFile(stream.audioUrl, audioTmp)
+                downloadToFile(stream.videoUrl, videoTmp, "Video", onProgress)
+                downloadToFile(stream.audioUrl, audioTmp, "Audio", onProgress)
+                onProgress("Merging high-quality video and audio...")
                 mux(videoTmp, audioTmp, outputFile)
             } finally {
                 videoTmp.delete()
                 audioTmp.delete()
             }
         } else {
-            downloadToFile(stream.videoUrl, outputFile)
+            downloadToFile(stream.videoUrl, outputFile, "File", onProgress)
         }
 
         return outputFile
     }
 
-    private fun downloadToFile(url: String, dest: File) {
+    private suspend fun downloadToFile(url: String, dest: File, label: String, onProgress: suspend (String) -> Unit) {
         val request = Request.Builder().url(url).build()
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
                 throw RuntimeException("Download failed: HTTP ${response.code} for $url")
             }
             val body = response.body ?: throw RuntimeException("Empty response body for $url")
-            dest.outputStream().use { out -> body.byteStream().copyTo(out) }
+            val totalBytes = body.contentLength()
+            val inputStream = body.byteStream()
+            
+            if (totalBytes > 0) {
+                onProgress("Downloading $label... 0%")
+            }
+            
+            dest.outputStream().use { outputStream ->
+                val buffer = ByteArray(8 * 1024)
+                var bytesCopied: Long = 0
+                var bytes = inputStream.read(buffer)
+                var lastReportTime = System.currentTimeMillis()
+                var lastReportedPercent = 0
+                
+                while (bytes >= 0) {
+                    outputStream.write(buffer, 0, bytes)
+                    bytesCopied += bytes
+                    
+                    if (totalBytes > 0) {
+                        val percent = (bytesCopied * 100 / totalBytes).toInt()
+                        if (percent >= lastReportedPercent + 5) {
+                            lastReportedPercent = percent
+                            onProgress("Downloading $label... $percent%")
+                        }
+                    } else {
+                        val now = System.currentTimeMillis()
+                        if (now - lastReportTime > 500) {
+                            lastReportTime = now
+                            val downloadedMb = bytesCopied / (1024 * 1024)
+                            onProgress("Downloading $label... ${downloadedMb}MB")
+                        }
+                    }
+                    
+                    bytes = inputStream.read(buffer)
+                }
+                
+                if (totalBytes > 0 && lastReportedPercent < 100) {
+                    onProgress("Downloading $label... 100%")
+                }
+            }
         }
     }
 
-    private fun mux(video: File, audio: File, output: File) {
+    private suspend fun mux(video: File, audio: File, output: File) {
         val ffmpeg = findFfmpeg()
             ?: throw RuntimeException(
                 "ffmpeg not found on PATH. Install it from https://ffmpeg.org and ensure it is on your system PATH."

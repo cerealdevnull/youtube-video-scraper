@@ -2,6 +2,7 @@ package com.cerealautomation.youtubedownloader
 
 import com.cereal.sdk.ExecutionResult
 import com.cereal.test.components.TestComponentProviderFactory
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -29,7 +30,7 @@ class TestYoutubeVideoDownloaderScript {
         }
 
         val mockDownloader = mockk<VideoDownloader> {
-            every { download(any(), any()) } returns File(System.getProperty("java.io.tmpdir"), "Test_Video.mp4")
+            coEvery { download(any(), any(), any()) } returns File(System.getProperty("java.io.tmpdir"), "Test_Video.mp4")
         }
 
         val script = YoutubeVideoDownloaderScript().apply {
