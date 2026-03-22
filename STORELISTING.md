@@ -1,23 +1,18 @@
-[Provide a concise summary starting with 1–2 sentences that clearly describe the primary function and purpose of the script.]
+The YouTube Video Downloader is a robust automation script that allows you to easily download high-quality videos and audio directly from YouTube. Simply provide a YouTube URL or Video ID, select your desired quality, and the script handles the rest, automatically saving the media to your Downloads folder.
 
 ## Features
 
-[Highlight the main features or benefits of the script in bullet points]
-- Extracts product prices from multiple websites
-- Automatically identifies price drops
-- Supports exporting data to CSV
+- **Quality Selection**: Choose your preferred download quality (from 360P up to 1080P and BEST) or opt for AUDIO_ONLY.
+- **Smart Fallback**: Automatically falls back to the next highest available quality if the requested resolution isn't supported for a particular video.
+- **Cross-Platform Support**: Seamlessly runs on Windows, macOS, and Linux out of the box.
+- **Automatic Muxing**: Downloads separate high-quality video and audio streams and seamlessly merges them together for resolutions like 1080P.
 
 ## Use Cases
 
-[Provide examples of how the script can be applied in real-world scenarios]
-- Deal hunting on e-commerce sites
-- Competitor price monitoring
+- **Offline Viewing**: Save videos locally to watch during flights, commutes, or in areas with poor internet connectivity.
+- **Content Archival**: Keep personal backups of favorite tutorials, lectures, or music videos.
+- **Audio Extraction**: Easily extract just the audio track from videos for podcasts or music listening.
 
 ## Requirements
 
-[Clearly list any external dependencies]
-- Requires a valid proxy service
-- Requires third-party CAPTCHA solvers (e.g., 2Captcha)
-
-> [!TIP]
-> This file is displayed on the marketplace. Use standard Markdown formatting. Ensure your description is clear, professional, and free of promotional language.
+- **FFmpeg**: Required for downloading 1080P or BEST quality videos. The script automatically merges high-definition video and audio streams using `ffmpeg`. Please ensure `ffmpeg` is installed and accessible on your system's PATH. (Not required for standard 720P, 480P, 360P, or AUDIO_ONLY downloads).
