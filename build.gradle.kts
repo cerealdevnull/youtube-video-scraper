@@ -81,3 +81,16 @@ tasks {
         }
     }
 }
+
+tasks.named<Test>("test") {
+    exclude("**/*E2E*")
+}
+
+val e2eTest = tasks.register<Test>("e2eTest") {
+    description = "Runs end-to-end tests."
+    group = "verification"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    include("**/*E2E*")
+    shouldRunAfter("test")
+}
