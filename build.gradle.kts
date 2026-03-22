@@ -64,7 +64,6 @@ buildscript {
 
 dependencies {
     implementation(libs.cereal.sdk)
-    implementation(libs.cereal.licensing)
     implementation(libs.newpipe.extractor)
     implementation(libs.okhttp)
 

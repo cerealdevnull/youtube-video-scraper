@@ -1,13 +1,9 @@
 package com.cerealautomation.youtubedownloader
 
-import com.cereal.licensechecker.LicenseChecker
-import com.cereal.licensechecker.LicenseState
 import com.cereal.sdk.ExecutionResult
 import com.cereal.test.components.TestComponentProviderFactory
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkConstructor
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.io.File
@@ -41,9 +37,6 @@ class TestYoutubeVideoDownloaderScript {
             downloader = mockDownloader,
         )
 
-        mockkConstructor(LicenseChecker::class)
-        coEvery { anyConstructed<LicenseChecker>().checkAccess() } returns LicenseState.Licensed
-
         val configuration = mockk<YoutubeDownloaderConfiguration> {
             every { videoUrl() } returns "dQw4w9WgXcQ"
             every { quality() } returns DownloadQuality.Q720P
@@ -63,9 +56,6 @@ class TestYoutubeVideoDownloaderScript {
     fun `execute returns error for invalid video URL`() = runBlocking {
         val script = YoutubeVideoDownloaderScript()
 
-        mockkConstructor(LicenseChecker::class)
-        coEvery { anyConstructed<LicenseChecker>().checkAccess() } returns LicenseState.Licensed
-
         val configuration = mockk<YoutubeDownloaderConfiguration> {
             every { videoUrl() } returns "not-a-valid-url-or-id"
             every { quality() } returns DownloadQuality.BEST
@@ -73,7 +63,6 @@ class TestYoutubeVideoDownloaderScript {
 
         val componentProviderFactory = TestComponentProviderFactory()
 
-        // Force onStart to set isLicensed = true
         script.onStart(configuration, componentProviderFactory.create())
 
         val result = script.execute(
