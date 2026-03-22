@@ -3,5 +3,5 @@
   "name": "YouTube Video Downloader",
   "version_code": 1,
   "script": "com.cerealautomation.youtubedownloader.YoutubeVideoDownloaderScript",
-  "instructions": "Paste a YouTube URL or video ID, select quality, and press Start. Files are saved to your Downloads folder. HD quality (1080P and BEST) requires ffmpeg to be installed."
+  "instructions": "Files are saved to your Downloads folder. HD quality (1080P and BEST) requires ffmpeg to be installed."
 }
