@@ -41,7 +41,8 @@
 }
 
 # Keep entry point of script so it's not removed when minimizing
--keep,allowoptimization public class * extends com.cereal.sdk.Script {
+-keep,allowoptimization public class * implements com.cereal.sdk.Script {
+    <init>();
     public <methods>;
 }
 -keep class * implements com.cereal.sdk.ScriptConfiguration
@@ -76,8 +77,23 @@
 -keep class org.schabi.newpipe.** { *; }
 -dontwarn org.schabi.newpipe.**
 
-# OkHttp ProGuard rules (from official OkHttp documentation)
+# OkHttp and Okio ProGuard rules
 -dontwarn okhttp3.**
 -dontwarn okio.**
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
+-keep class okio.** { *; }
+-keep interface okio.** { *; }
+
+# Keep NewPipeExtractor's core dependencies to prevent reflection failures at runtime
+-keep class com.grack.nanojson.** { *; }
+-dontwarn com.grack.nanojson.**
+
+-keep class org.jsoup.** { *; }
+-dontwarn org.jsoup.**
+
+-keep class com.google.protobuf.** { *; }
+-dontwarn com.google.protobuf.**
+
+-keep class org.mozilla.** { *; }
+-dontwarn org.mozilla.**
