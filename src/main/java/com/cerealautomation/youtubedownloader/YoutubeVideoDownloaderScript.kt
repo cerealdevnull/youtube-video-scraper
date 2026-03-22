@@ -4,10 +4,10 @@ import com.cereal.sdk.ExecutionResult
 import com.cereal.sdk.Script
 import com.cereal.sdk.component.ComponentProvider
 
-class YoutubeVideoDownloaderScript(
-    private val extractor: YouTubeExtractor = YouTubeExtractor(),
-    private val downloader: VideoDownloader = VideoDownloader(),
-) : Script<YoutubeDownloaderConfiguration> {
+class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
+
+    internal var extractor: YouTubeExtractor = YouTubeExtractor()
+    internal var downloader: VideoDownloader = VideoDownloader()
 
     override suspend fun onStart(
         configuration: YoutubeDownloaderConfiguration,

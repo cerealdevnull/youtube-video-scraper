@@ -32,10 +32,10 @@ class TestYoutubeVideoDownloaderScript {
             every { download(any(), any()) } returns File(System.getProperty("java.io.tmpdir"), "Test_Video.mp4")
         }
 
-        val script = YoutubeVideoDownloaderScript(
-            extractor = mockExtractor,
-            downloader = mockDownloader,
-        )
+        val script = YoutubeVideoDownloaderScript().apply {
+            extractor = mockExtractor
+            downloader = mockDownloader
+        }
 
         val configuration = mockk<YoutubeDownloaderConfiguration> {
             every { videoUrl() } returns "dQw4w9WgXcQ"
