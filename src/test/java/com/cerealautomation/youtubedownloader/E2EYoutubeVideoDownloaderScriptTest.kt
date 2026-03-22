@@ -39,9 +39,9 @@ class E2EYoutubeVideoDownloaderScriptTest {
         
         // Extract the saved filename from the success message
         val successMessage = result.message
-        assertTrue(successMessage.startsWith("Saved to "), "Expected success message to start with 'Saved to ' but got: $successMessage")
+        assertTrue(successMessage.startsWith("Saved to Downloads folder: "), "Expected success message to start with 'Saved to Downloads folder: ' but got: $successMessage")
         
-        val filename = successMessage.removePrefix("Saved to ")
+        val filename = successMessage.removePrefix("Saved to Downloads folder: ")
         
         val downloadsDir = File(System.getProperty("user.home"), "Downloads")
         val downloadedFile = File(downloadsDir, filename)

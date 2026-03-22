@@ -64,7 +64,7 @@ class YoutubeVideoDownloaderScript : Script<YoutubeDownloaderConfiguration> {
         }
 
         provider.logger().info("Downloaded: ${outputFile.absolutePath}")
-        return ExecutionResult.Success("Saved to ${outputFile.name}")
+        return ExecutionResult.Success("Saved to Downloads folder: ${outputFile.name}")
     }
 
     override suspend fun onFinish(
