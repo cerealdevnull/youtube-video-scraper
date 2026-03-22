@@ -51,7 +51,7 @@ class YoutubeVideoDownloaderScript(
         if (!isLicensed) return ExecutionResult.Error("Unlicensed")
 
         val rawInput = configuration.videoUrl().trim()
-        val quality = DownloadQuality.fromString(configuration.quality())
+        val quality = configuration.quality()
 
         statusUpdate("Parsing video URL…")
         val videoId = VideoIdParser.parse(rawInput)

@@ -46,7 +46,7 @@ class TestYoutubeVideoDownloaderScript {
 
         val configuration = mockk<YoutubeDownloaderConfiguration> {
             every { videoUrl() } returns "dQw4w9WgXcQ"
-            every { quality() } returns "720P"
+            every { quality() } returns DownloadQuality.Q720P
         }
 
         val componentProviderFactory = TestComponentProviderFactory()
@@ -68,7 +68,7 @@ class TestYoutubeVideoDownloaderScript {
 
         val configuration = mockk<YoutubeDownloaderConfiguration> {
             every { videoUrl() } returns "not-a-valid-url-or-id"
-            every { quality() } returns "BEST"
+            every { quality() } returns DownloadQuality.BEST
         }
 
         val componentProviderFactory = TestComponentProviderFactory()

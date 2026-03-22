@@ -15,7 +15,7 @@ interface YoutubeDownloaderConfiguration : ScriptConfiguration {
     @ScriptConfigurationItem(
         keyName = "Quality",
         name = "Quality",
-        description = "Desired video quality. Options: BEST, 1080P, 720P, 480P, 360P, AUDIO_ONLY. Falls back to next-lower quality if unavailable. BEST and 1080P require ffmpeg."
+        description = "Desired video quality. Falls back to next-lower quality if unavailable. BEST and 1080P require ffmpeg."
     )
-    fun quality(): String
+    fun quality(): DownloadQuality
 }
